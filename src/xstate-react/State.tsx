@@ -1,4 +1,3 @@
-import React, { memo } from "react";
 import globToRegExp from "glob-to-regexp";
 import { isPlainObject } from "lodash";
 

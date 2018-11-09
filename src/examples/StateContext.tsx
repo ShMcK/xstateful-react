@@ -1,4 +1,4 @@
-import reactXState from "./xstate-react";
+import reactXState from "../xstate-react";
 
 const config = {
   key: "light",

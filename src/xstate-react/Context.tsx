@@ -1,58 +1,60 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { interpret } from "xstate/lib/interpreter";
 import stateWrapper from "./State";
-import { Machine } from "xstate/lib/types";
 
 interface Value {
   transition(event: string): void;
   state: any;
-  exState: any,
-  setExState(value: any): void
+  exState: any;
+  setExState(value: any): void;
 }
 
 interface MachineContextProps {
   actions?: {
-    [key: string]: () => void
-  }
+    [key: string]: () => void;
+  };
 }
 
 interface Action {
-  type: string,
-  exec?: () => void
+  type: string;
+  exec?: () => void;
 }
 
 export default ({ name, machine }) => {
   const Context = createContext(name);
 
   let transition = (event: string) => {};
-  let xsf
-  let actions: Action[] = []
+  let xsf;
+  let actions: Action[] = [];
 
   const Provider = props => {
-
     const [state, setState] = useState(machine.initialState);
-    const [exState, setExState] = useState({})
+    const [exState, setExState] = useState({});
 
     useEffect(() => {
       xsf = interpret(machine)
         .onTransition(setState)
-        .onChange(setExState)
+        .onChange(setExState);
 
       xsf.start();
 
       transition = (event: string) => {
-        const next = xsf.send(event)
-        actions = next.actions || []
+        const next = xsf.send(event);
+        actions = next.actions || [];
 
         actions.forEach((action: Action) => {
           action.exec && action.exec();
         });
-
       };
       return () => xsf.stop();
     }, []);
 
-    const value: Value = { transition, state: state.value, exState, setExState };
+    const value: Value = {
+      transition,
+      state: state.value,
+      exState,
+      setExState
+    };
 
     return <Context.Provider value={value}>{props.children}</Context.Provider>;
   };
@@ -72,10 +74,27 @@ export default ({ name, machine }) => {
     return { state, transition };
   };
 
+  const withStatechart = (Component: any, mergeProps?: object) => {
+    return props => {
+      const { state } = useMachineContext({
+        actions: Component
+      })
+      return (
+        <Component
+          {...props}
+          {...mergeProps}
+          transition={transition}
+          state={state}
+        />
+      );
+    };
+  };
+
   return {
     Provider,
     Consumer,
     State: stateWrapper(useMachineContext),
-    useMachineContext
+    useMachineContext,
+    withStatechart
   };
 };

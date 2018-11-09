@@ -1,7 +1,9 @@
 import React from 'react'
+
+import Demo from './Demo'
 import StateContext from './StateContext'
 
-const MachineContextTest = props => {
+const UseMachineContext = props => {
     const { state, transition } = StateContext.useMachineContext({
         actions: {
             sayHi() {
@@ -10,11 +12,8 @@ const MachineContextTest = props => {
         }
     });
     return (
-        <div style={{ width: 200 }}>
-            <span>useContextValue: {state}</span>
-            <button onClick={() => transition('NEXT')}>Transition</button>
-        </div>
+        <Demo title='UseMachineContext' state={state} transition={transition} />
     )
 }
 
-export default MachineContextTest
+export default UseMachineContext
