@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, useRef } from "react";
 import { interpret } from "xstate/lib/interpreter";
 import stateWrapper from "./State";
 
@@ -76,11 +76,14 @@ export default ({ name, machine }) => {
 
   const withStatechart = (Component: any, mergeProps?: object) => {
     return props => {
+      const ref = useRef({})
       const { state } = useMachineContext({
-        actions: Component
-      })
+        // @ts-ignore
+        actions: ref.current.__proto__
+      });
       return (
         <Component
+          ref={ref}
           {...props}
           {...mergeProps}
           transition={transition}
