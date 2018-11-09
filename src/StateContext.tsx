@@ -16,7 +16,10 @@ const config = {
     },
     red: {
       on: {
-        NEXT: "green"
+        NEXT: {
+            target: 'green',
+            actions: ['sayHi']
+        }
       }
     }
   }
